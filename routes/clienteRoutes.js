@@ -1,4 +1,6 @@
 const express = require('express');
+
+
 const {
   getClientes,
   getCliente,
@@ -12,13 +14,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(protect, getClientes)
-  .post(protect, createCliente);
+  .get( getClientes)
+  .post( createCliente);
 
 router
   .route('/:id')
-  .get(protect, getCliente)
-  .put(protect, updateCliente)
-  .delete(protect, authorize('Administrador'), deleteCliente);
+  .get( getCliente)
+  .put( updateCliente)
+  .delete( authorize('Administrador'), deleteCliente);
 
 module.exports = router;

@@ -38,6 +38,17 @@ Renta.belongsTo(Cliente, {
   as: 'cliente'
 });
 
+//cliente-> usuario
+Cliente.hasOne(Usuario, {
+  foreignKey: 'id_cliente',
+  as: 'usuario'
+});
+Usuario.belongsTo(Cliente, {
+  foreignKey: 'id_cliente',
+  as: 'cliente'
+});
+
+
 // Spot -> Rentas
 Spot.hasMany(Renta, {
   foreignKey: 'id_spot',

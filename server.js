@@ -1,5 +1,5 @@
 const app = require('./app');
-const { connectDB } = require('./config/database');
+const { connectDB, sequelize } = require('./config/database');
 
 const PORT = process.env.PORT || 3000;
 
@@ -7,6 +7,13 @@ const startServer = async () => {
   try {
     // Conectar a la base de datos
     await connectDB();
+
+    //codigo para hacer migraciones
+    //usar solo una vez con los cambios
+    await sequelize.sync({alter:true});
+    console.log('Base de datos sincronizada');
+
+
 
     // Iniciar servidor
     app.listen(PORT, () => {

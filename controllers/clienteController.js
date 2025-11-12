@@ -1,5 +1,6 @@
-const { Cliente, Renta } = require('../models');
+const { Cliente, Renta, Usuario } = require('../models');
 const { registrarAuditoria } = require('../middleware/auditoria');
+const { sequelize } = require('../config/database');
 
 // @desc    Obtener todos los clientes
 // @route   GET /api/clientes
@@ -63,19 +64,41 @@ exports.getCliente = async (req, res) => {
 // @route   POST /api/clientes
 // @access  Private
 exports.createCliente = async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const cliente = await Cliente.create(req.body);
+    const { nombre, telefono, email, direccion, nombre_usuario, password_hash, rol } = req.body;
+    const cliente = await Cliente.create({
+      nombre,
+      telefono,
+      email,
+      direccion
+    },
+      { transaction: t }
+    );
+    const usuario = await Usuario.create({
+      id_cliente: cliente.id_cliente,
+      nombre_usuario,
+      password_hash,
+      rol: rol || 'Cliente'
+    },
+      { transaction: t }
+    );
 
-    await registrarAuditoria(req, 'CREAR_CLIENTE', 'clientes', {
-      id: cliente.id_cliente,
-      nombre: cliente.nombre
-    });
+    await t.commit();
 
     res.status(201).json({
       success: true,
-      data: cliente
+      data: {
+        cliente,
+        usuario: {
+          id_usuario: usuario.id_usuario,
+          nombre_usuario: usuario.nombre_usuario,
+          rol: usuario.rol
+        }
+      }
     });
   } catch (error) {
+    await t.rollback();
     res.status(500).json({
       success: false,
       message: 'Error al crear cliente',

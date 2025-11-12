@@ -18,11 +18,19 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false
   },
   rol: {
-    type: DataTypes.ENUM('Administrador', 'Supervisor', 'Operador'),
+    type: DataTypes.ENUM('Administrador', 'Supervisor', 'Operador', 'Cliente'),
     defaultValue: 'Operador'
   },
   id_rv_park: {
     type: DataTypes.INTEGER
+  },
+
+  id_cliente: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: 'clientes',
+      key: 'id_cliente'
+    }
   },
   activo: {
     type: DataTypes.BOOLEAN,
