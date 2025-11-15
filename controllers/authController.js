@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
-const { Usuario } = require('../models');
+const { Usuario, Persona } = require('../models');
 const { registrarAuditoria } = require('../middleware/auditoria');
 
 // Generar token JWT
-const generarToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generarToken = (id_usuario) => {
+  return jwt.sign({ id_usuario }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
@@ -23,7 +23,6 @@ exports.register = async (req, res) => {
       //datos persona
       nombre,
       telefono,
-      email,
     } = req.body;
 
     // Verificar si el usuario ya existe
@@ -38,7 +37,7 @@ exports.register = async (req, res) => {
     const persona = await Persona.create({
       nombre,
       telefono,
-      email,
+      email: nombre_usuario,
     });
 
 
@@ -63,7 +62,6 @@ exports.register = async (req, res) => {
         nombre: persona.nombre,
         telefono: persona.telefono,
         email: persona.email,
-        token: generarToken(usuario.id_usuario)
       }
     });
   } catch (error) {
@@ -89,7 +87,11 @@ exports.login = async (req, res) => {
       });
     }
 
-    const usuario = await Usuario.findOne({ where: { nombre_usuario } });
+    const usuario = await Usuario.findOne({ where: { nombre_usuario},
+    include:{
+      model: Persona,
+      as: 'Persona'
+    } });
 
     if (!usuario || !(await usuario.comparePassword(password))) {
       return res.status(401).json({
@@ -114,11 +116,15 @@ exports.login = async (req, res) => {
       data: {
         id_usuario: usuario.id_usuario,
         nombre_usuario: usuario.nombre_usuario,
+        nombre: usuario.Persona.nombre,
+        telefono: usuario.Persona.telefono,
+        email: usuario.Persona.email,
         rol: usuario.rol,
         id_rv_park: usuario.id_rv_park,
         token: generarToken(usuario.id_usuario)
       }
     });
+    
   } catch (error) {
     res.status(500).json({
       success: false,

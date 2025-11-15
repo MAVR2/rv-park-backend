@@ -18,7 +18,12 @@ exports.protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await Usuario.findByPk(decoded.id);
+    req.user = await Usuario.findByPk(
+      decoded.id_usuario,
+      {
+        attributes: { exclude: ['password_hash'] }
+      }
+    );
 
     if (!req.user || !req.user.activo) {
       return res.status(401).json({
