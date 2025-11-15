@@ -22,14 +22,16 @@ const Usuario = sequelize.define('Usuario', {
     defaultValue: 'Cliente'
   },
   id_rv_park: {
-    type: DataTypes.INTEGER
+    type: DataTypes.INTEGER,
+    allowNull:true
+
   },
 
   id_Persona: {
     type: DataTypes.INTEGER,
     references: {
-      model: 'persona',
-      key: 'id_persona'
+      model: 'Persona',
+      key: 'id_Persona'
     }
   },
   activo: {

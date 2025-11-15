@@ -12,16 +12,19 @@ const Persona = sequelize.define('Persona', {
     allowNull: false
   },
   telefono: {
+    allowNull:true,
     type: DataTypes.STRING(20)
   },
   email: {
     type: DataTypes.STRING(100)
   },
   vehiculo: {
-    type: DataTypes.ENUM('Carga', 'Maquinaria', 'Caravana'),
-    defaultValue: 'Caravana'
+    allowNull: true,
+    type: DataTypes.ENUM('Carga', 'Maquinaria', 'Caravana', "Otro"),
+    defaultValue: 'Otro'
   },
   direccion: {
+    allowNull: true,
     type: DataTypes.STRING(255)
   },
   fecha_registro: {

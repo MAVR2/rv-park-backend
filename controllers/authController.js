@@ -14,7 +14,17 @@ const generarToken = (id) => {
 // @access  Private/Admin
 exports.register = async (req, res) => {
   try {
-    const { nombre_usuario, nombre, password_hash, rol, id_rv_park } = req.body;
+    const { 
+      //datos usuario
+      nombre_usuario, 
+      password_hash, 
+      rol,   
+      
+      //datos persona
+      nombre,
+      telefono,
+      email,
+    } = req.body;
 
     // Verificar si el usuario ya existe
     const usuarioExiste = await Usuario.findOne({ where: { nombre_usuario } });
@@ -25,12 +35,18 @@ exports.register = async (req, res) => {
       });
     }
 
+    const persona = await Persona.create({
+      nombre,
+      telefono,
+      email,
+    });
+
+
     const usuario = await Usuario.create({
       nombre_usuario,
-      nombre,
       password_hash,
       rol,
-      id_rv_park
+      id_Persona: persona.id_Persona
     });
 
     await registrarAuditoria(req, 'CREAR_USUARIO', 'usuarios', {
@@ -44,6 +60,9 @@ exports.register = async (req, res) => {
         id_usuario: usuario.id_usuario,
         nombre_usuario: usuario.nombre_usuario,
         rol: usuario.rol,
+        nombre: persona.nombre,
+        telefono: persona.telefono,
+        email: persona.email,
         token: generarToken(usuario.id_usuario)
       }
     });
@@ -54,7 +73,9 @@ exports.register = async (req, res) => {
       error: error.message
     });
   }
-}// @desc    Login usuario
+}
+
+// @desc    Login usuario
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = async (req, res) => {
