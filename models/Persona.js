@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 
-const Cliente = sequelize.define('Cliente', {
-  id_cliente: {
+const Persona = sequelize.define('Persona', {
+  id_Persona: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
@@ -17,6 +17,10 @@ const Cliente = sequelize.define('Cliente', {
   email: {
     type: DataTypes.STRING(100)
   },
+  vehiculo: {
+    type: DataTypes.ENUM('Carga', 'Maquinaria', 'Caravana'),
+    defaultValue: 'Caravana'
+  },
   direccion: {
     type: DataTypes.STRING(255)
   },
@@ -24,9 +28,10 @@ const Cliente = sequelize.define('Cliente', {
     type: DataTypes.DATEONLY,
     defaultValue: DataTypes.NOW
   }
+  
 }, {
-  tableName: 'clientes',
+  tableName: 'persona',
   timestamps: false
 });
 
-module.exports = Cliente;
+module.exports = Persona;

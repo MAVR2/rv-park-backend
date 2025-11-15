@@ -2,11 +2,11 @@ const express = require('express');
 
 
 const {
-  getClientes,
-  getCliente,
-  createCliente,
-  updateCliente,
-  deleteCliente
+  getPersonas,
+  getPersona,
+  createPersona,
+  updatePersona,
+  deletePersona
 } = require('../controllers/clienteController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -14,13 +14,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get( getClientes)
-  .post( createCliente);
+  .get( getPersonas)
+  .post( createPersona);
 
 router
   .route('/:id')
-  .get( getCliente)
-  .put( updateCliente)
-  .delete( authorize('Administrador'), deleteCliente);
+  .get( getPersona)
+  .put( updatePersona)
+  .delete( authorize('Administrador'), deletePersona);
 
 module.exports = router;

@@ -14,7 +14,7 @@ const generarToken = (id) => {
 // @access  Private/Admin
 exports.register = async (req, res) => {
   try {
-    const { nombre_usuario, password_hash, rol, id_rv_park } = req.body;
+    const { nombre_usuario, nombre, password_hash, rol, id_rv_park } = req.body;
 
     // Verificar si el usuario ya existe
     const usuarioExiste = await Usuario.findOne({ where: { nombre_usuario } });
@@ -27,6 +27,7 @@ exports.register = async (req, res) => {
 
     const usuario = await Usuario.create({
       nombre_usuario,
+      nombre,
       password_hash,
       rol,
       id_rv_park
@@ -53,9 +54,7 @@ exports.register = async (req, res) => {
       error: error.message
     });
   }
-};
-
-// @desc    Login usuario
+}// @desc    Login usuario
 // @route   POST /api/auth/login
 // @access  Public
 exports.login = async (req, res) => {
@@ -107,6 +106,7 @@ exports.login = async (req, res) => {
     });
   }
 };
+
 
 // @desc    Obtener usuario actual
 // @route   GET /api/auth/me

@@ -1,4 +1,4 @@
-const { Renta, Cliente, Spot, Pago } = require('../models');
+const { Renta, Persona, Spot, Pago } = require('../models');
 const { sequelize } = require('../config/database');
 const { registrarAuditoria } = require('../middleware/auditoria');
 const { calcularMontoPrimerPeriodo, calcularDias } = require('../utils/paymentCalculator');
@@ -8,17 +8,17 @@ const { calcularMontoPrimerPeriodo, calcularDias } = require('../utils/paymentCa
 // @access  Private
 exports.getRentas = async (req, res) => {
   try {
-    const { estatus_pago, id_cliente, id_spot } = req.query;
+    const { estatus_pago, id_Persona, id_spot } = req.query;
     const where = {};
 
     if (estatus_pago) where.estatus_pago = estatus_pago;
-    if (id_cliente) where.id_cliente = id_cliente;
+    if (id_Persona) where.id_Persona = id_Persona;
     if (id_spot) where.id_spot = id_spot;
 
     const rentas = await Renta.findAll({
       where,
       include: [
-        { model: Cliente, as: 'cliente' },
+        { model: Persona, as: 'Persona' },
         { model: Spot, as: 'spot' },
         { model: Pago, as: 'pagos' }
       ],
@@ -46,7 +46,7 @@ exports.getRenta = async (req, res) => {
   try {
     const renta = await Renta.findByPk(req.params.id, {
       include: [
-        { model: Cliente, as: 'cliente' },
+        { model: Persona, as: 'Persona' },
         { model: Spot, as: 'spot' },
         { model: Pago, as: 'pagos' }
       ]
@@ -79,7 +79,7 @@ exports.createRenta = async (req, res) => {
   const t = await sequelize.transaction();
 
   try {
-    const { id_cliente, id_spot, fecha_inicio, fecha_fin, metodo_pago, observaciones } = req.body;
+    const { id_Persona, id_spot, fecha_inicio, fecha_fin, metodo_pago, observaciones } = req.body;
 
     // Validar que el spot existe
     const spot = await Spot.findByPk(id_spot);
@@ -127,7 +127,7 @@ exports.createRenta = async (req, res) => {
 
     // Crear la renta
     const renta = await Renta.create({
-      id_cliente,
+      id_Persona,
       id_spot,
       fecha_inicio,
       fecha_fin,
@@ -156,7 +156,7 @@ exports.createRenta = async (req, res) => {
 
     await registrarAuditoria(req, 'CREAR_RENTA', 'rentas', {
       id_renta: renta.id_renta,
-      id_cliente,
+      id_Persona,
       id_spot,
       monto: calculoPago.monto,
       periodo: calculoPago.periodo
@@ -167,7 +167,7 @@ exports.createRenta = async (req, res) => {
     // Obtener la renta con todas las relaciones
     const rentaCompleta = await Renta.findByPk(renta.id_renta, {
       include: [
-        { model: Cliente, as: 'cliente' },
+        { model: Persona, as: 'Persona' },
         { model: Spot, as: 'spot' },
         { model: Pago, as: 'pagos' }
       ]
@@ -232,7 +232,7 @@ exports.updateRenta = async (req, res) => {
 
     const rentaActualizada = await Renta.findByPk(renta.id_renta, {
       include: [
-        { model: Cliente, as: 'cliente' },
+        { model: Persona, as: 'Persona' },
         { model: Spot, as: 'spot' },
         { model: Pago, as: 'pagos' }
       ]

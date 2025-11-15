@@ -1,6 +1,6 @@
 const RvPark = require('./RvPark');
 const Spot = require('./Spot');
-const Cliente = require('./Cliente');
+const Persona = require('./Persona');
 const Renta = require('./Renta');
 const Pago = require('./Pago');
 const Usuario = require('./Usuario');
@@ -28,24 +28,24 @@ Usuario.belongsTo(RvPark, {
   as: 'rvPark'
 });
 
-// Cliente -> Rentas
-Cliente.hasMany(Renta, {
-  foreignKey: 'id_cliente',
+// Persona -> Rentas
+Persona.hasMany(Renta, {
+  foreignKey: 'id_Persona',
   as: 'rentas'
 });
-Renta.belongsTo(Cliente, {
-  foreignKey: 'id_cliente',
-  as: 'cliente'
+Renta.belongsTo(Persona, {
+  foreignKey: 'id_Persona',
+  as: 'Persona'
 });
 
-//cliente-> usuario
-Cliente.hasOne(Usuario, {
-  foreignKey: 'id_cliente',
+//Persona-> usuario
+Persona.hasOne(Usuario, {
+  foreignKey: 'id_Persona',
   as: 'usuario'
 });
-Usuario.belongsTo(Cliente, {
-  foreignKey: 'id_cliente',
-  as: 'cliente'
+Usuario.belongsTo(Persona, {
+  foreignKey: 'id_Persona',
+  as: 'Persona'
 });
 
 
@@ -82,7 +82,7 @@ Auditoria.belongsTo(Usuario, {
 module.exports = {
   RvPark,
   Spot,
-  Cliente,
+  Persona,
   Renta,
   Pago,
   Usuario,

@@ -1,13 +1,13 @@
-const { Cliente, Renta, Usuario } = require('../models');
+const { Persona, Renta, Usuario } = require('../models');
 const { registrarAuditoria } = require('../middleware/auditoria');
 const { sequelize } = require('../config/database');
 
-// @desc    Obtener todos los clientes
-// @route   GET /api/clientes
+// @desc    Obtener todos los Personas
+// @route   GET /api/Personas
 // @access  Private
-exports.getClientes = async (req, res) => {
+exports.getPersonas = async (req, res) => {
   try {
-    const clientes = await Cliente.findAll({
+    const Personas = await Persona.findAll({
       include: [{
         model: Renta,
         as: 'rentas'
@@ -16,58 +16,58 @@ exports.getClientes = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      count: clientes.length,
-      data: clientes
+      count: Personas.length,
+      data: Personas
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al obtener clientes',
+      message: 'Error al obtener Personas',
       error: error.message
     });
   }
 };
 
-// @desc    Obtener un cliente por ID
-// @route   GET /api/clientes/:id
+// @desc    Obtener un Persona por ID
+// @route   GET /api/Personas/:id
 // @access  Private
-exports.getCliente = async (req, res) => {
+exports.getPersona = async (req, res) => {
   try {
-    const cliente = await Cliente.findByPk(req.params.id, {
+    const Persona = await Persona.findByPk(req.params.id, {
       include: [{
         model: Renta,
         as: 'rentas'
       }]
     });
 
-    if (!cliente) {
+    if (!Persona) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'Persona no encontrado'
       });
     }
 
     res.status(200).json({
       success: true,
-      data: cliente
+      data: Persona
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al obtener cliente',
+      message: 'Error al obtener Persona',
       error: error.message
     });
   }
 };
 
-// @desc    Crear cliente
-// @route   POST /api/clientes
+// @desc    Crear Persona
+// @route   POST /api/Personas
 // @access  Private
-exports.createCliente = async (req, res) => {
+exports.createPersona = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     const { nombre, telefono, email, direccion, nombre_usuario, password_hash, rol } = req.body;
-    const cliente = await Cliente.create({
+    const Persona = await Persona.create({
       nombre,
       telefono,
       email,
@@ -76,10 +76,10 @@ exports.createCliente = async (req, res) => {
       { transaction: t }
     );
     const usuario = await Usuario.create({
-      id_cliente: cliente.id_cliente,
+      id_Persona: Persona.id_Persona,
       nombre_usuario,
       password_hash,
-      rol: rol || 'Cliente'
+      rol: rol || 'Persona'
     },
       { transaction: t }
     );
@@ -89,7 +89,7 @@ exports.createCliente = async (req, res) => {
     res.status(201).json({
       success: true,
       data: {
-        cliente,
+        Persona,
         usuario: {
           id_usuario: usuario.id_usuario,
           nombre_usuario: usuario.nombre_usuario,
@@ -101,66 +101,66 @@ exports.createCliente = async (req, res) => {
     await t.rollback();
     res.status(500).json({
       success: false,
-      message: 'Error al crear cliente',
+      message: 'Error al crear Persona',
       error: error.message
     });
   }
 };
 
-// @desc    Actualizar cliente
-// @route   PUT /api/clientes/:id
+// @desc    Actualizar Persona
+// @route   PUT /api/Personas/:id
 // @access  Private
-exports.updateCliente = async (req, res) => {
+exports.updatePersona = async (req, res) => {
   try {
-    const cliente = await Cliente.findByPk(req.params.id);
+    const Persona = await Persona.findByPk(req.params.id);
 
-    if (!cliente) {
+    if (!Persona) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'Persona no encontrado'
       });
     }
 
-    await cliente.update(req.body);
+    await Persona.update(req.body);
 
-    await registrarAuditoria(req, 'ACTUALIZAR_CLIENTE', 'clientes', {
-      id: cliente.id_cliente,
+    await registrarAuditoria(req, 'ACTUALIZAR_Persona', 'Personas', {
+      id: Persona.id_Persona,
       cambios: req.body
     });
 
     res.status(200).json({
       success: true,
-      data: cliente
+      data: Persona
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al actualizar cliente',
+      message: 'Error al actualizar Persona',
       error: error.message
     });
   }
 };
 
-// @desc    Eliminar cliente
-// @route   DELETE /api/clientes/:id
+// @desc    Eliminar Persona
+// @route   DELETE /api/Personas/:id
 // @access  Private/Admin
-exports.deleteCliente = async (req, res) => {
+exports.deletePersona = async (req, res) => {
   try {
-    const cliente = await Cliente.findByPk(req.params.id);
+    const Persona = await Persona.findByPk(req.params.id);
 
-    if (!cliente) {
+    if (!Persona) {
       return res.status(404).json({
         success: false,
-        message: 'Cliente no encontrado'
+        message: 'Persona no encontrado'
       });
     }
 
-    await registrarAuditoria(req, 'ELIMINAR_CLIENTE', 'clientes', {
-      id: cliente.id_cliente,
-      nombre: cliente.nombre
+    await registrarAuditoria(req, 'ELIMINAR_Persona', 'Personas', {
+      id: Persona.id_Persona,
+      nombre: Persona.nombre
     });
 
-    await cliente.destroy();
+    await Persona.destroy();
 
     res.status(200).json({
       success: true,
@@ -169,7 +169,7 @@ exports.deleteCliente = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error al eliminar cliente',
+      message: 'Error al eliminar Persona',
       error: error.message
     });
   }
